@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, ClipboardList, Map, MapPin, Flame, X, FileSpreadsheet } from "lucide-react";
 import { useUIStore } from "@/features/ui/ui.store";
+import { BrandName } from "@/components/ui/brand-name";
 
 interface NavItem {
   href: string;
@@ -92,7 +93,7 @@ export const Sidebar: React.FC = () => {
           />
           <aside className="absolute left-0 top-0 h-full w-72 max-w-[80%] bg-light-background dark:bg-grey900 border-r border-grey200 dark:border-grey800 p-6 shadow-2xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <span className="text-lg font-black text-forestGreen dark:text-limeGreen">Txeneza</span>
+              <BrandName className="text-lg font-black" />
               <button
                 onClick={closeSidebar}
                 className="p-1.5 rounded-lg text-grey600 dark:text-grey400 hover:bg-grey200 dark:hover:bg-grey800 transition-colors"

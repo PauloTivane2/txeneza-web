@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Map, Flame, MapPin, Eye, ShieldAlert, Sparkles } from "lucide-react";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const MapPreviewSection: React.FC = () => {
   const [mapMode, setMapMode] = useState<"markers" | "heatmap">("markers");
@@ -61,7 +62,7 @@ export const MapPreviewSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <span className="text-xs font-black tracking-widest text-limeGreen uppercase">Visualização de Dados</span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mt-3">
-            O Que o Txeneza Mostra
+            O Que o <BrandName /> Mostra
           </h2>
           <p className="text-slate-605 dark:text-slate-400 mt-4 text-sm sm:text-base leading-relaxed">
             Consulte as ocorrências em tempo real. A plataforma oferece duas formas complementares de visualizar a gravidade do problema na Beira: marcadores detalhados e mapas térmicos.

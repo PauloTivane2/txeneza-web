@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { useUIStore } from "@/features/ui/ui.store";
 import { Sun, Moon, LogOut, Menu } from "lucide-react";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const Header: React.FC = () => {
   const router = useRouter();
@@ -39,8 +40,8 @@ export const Header: React.FC = () => {
             <Menu className="w-5 h-5" />
           </button>
         )}
-        <Link href="/" className="text-xl font-black text-forestGreen dark:text-limeGreen hover:opacity-90 transition-opacity">
-          Txeneza
+        <Link href="/" className="text-xl font-black hover:opacity-90 transition-opacity">
+          <BrandName />
         </Link>
         <span className="hidden sm:inline text-[10px] uppercase tracking-wider px-2 py-0.5 bg-forestGreen/10 dark:bg-limeGreen/10 text-forestGreen dark:text-limeGreen rounded-full font-bold">
           {isAuthenticated ? "Painel Admin" : "Web App"}

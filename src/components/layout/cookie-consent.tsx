@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, X } from "lucide-react";
 import { cookiesManager } from "@/lib/cookies";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const CookieConsent: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -58,7 +59,7 @@ export const CookieConsent: React.FC = () => {
 
           {/* Description */}
           <p className="text-xs text-slate-350 leading-relaxed">
-            Utilizamos cookies para melhorar a sua experiência, guardar preferências do utilizador, analisar tráfego e garantir o correto funcionamento do mapa do Txeneza. Ao continuar a navegar, aceita a nossa política de privacidade.
+            Utilizamos cookies para melhorar a sua experiência, guardar preferências do utilizador, analisar tráfego e garantir o correto funcionamento do mapa do <BrandName />. Ao continuar a navegar, aceita a nossa política de privacidade.
           </p>
 
           {/* Action Buttons */}

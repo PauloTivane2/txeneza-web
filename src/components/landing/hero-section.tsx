@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppMockup } from "./app-mockup";
 import { PlusCircle, Flame, ArrowDown, Info, X } from "lucide-react";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const HeroSection: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
@@ -73,7 +74,7 @@ export const HeroSection: React.FC = () => {
                 className="w-14 h-18 sm:w-16 sm:h-20 object-contain shrink-0 filter drop-shadow-[0_8px_16px_rgba(181,242,48,0.15)]" 
               />
               <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-none">
-                <span className="text-limeGreen">Txeneza</span>
+                <BrandName />
               </h1>
             </motion.div>
 
@@ -175,7 +176,7 @@ export const HeroSection: React.FC = () => {
                   Aplicação não detetada
                 </h5>
                 <p className="text-xs text-slate-200 mt-1 leading-relaxed font-sans break-words">
-                  Para efetuar uma denúncia, necessita da aplicação Txeneza. A encaminhar para a secção de descarregamento abaixo...
+                  Para efetuar uma denúncia, necessita da aplicação <BrandName />. A encaminhar para a secção de descarregamento abaixo...
                 </p>
               </div>
               <button
