@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Download, Landmark, ArrowRight, Shield } from "lucide-react";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const LandingFooter: React.FC = () => {
   return (
@@ -19,9 +20,7 @@ export const LandingFooter: React.FC = () => {
               <div className="w-9 h-9 flex items-center justify-center shrink-0">
                 <img src="/image/TXENEZA.png" alt="Txeneza Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="text-xl font-black tracking-tight text-white">
-                Txeneza
-              </span>
+              <BrandName className="text-xl font-black tracking-tight" />
             </Link>
             <p className="text-xs sm:text-sm text-slate-300/90 leading-relaxed max-w-sm">
               Saneamento colaborativo digital para a Cidade da Beira. Mapeando e reportando focos de lixo urbano para um ambiente mais sustentável e saudável.
@@ -87,7 +86,7 @@ export const LandingFooter: React.FC = () => {
         {/* Bottom Bar: Copyright and Discrete Admin Link */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-400">
           <div>
-            &copy; {new Date().getFullYear()} Txeneza. Trabalho Acadêmico de Conclusão de Curso (Monografia) — Beira, Moçambique.
+            &copy; {new Date().getFullYear()} <BrandName />. Trabalho Acadêmico de Conclusão de Curso (Monografia) — Beira, Moçambique.
           </div>
 
           {/* Discrete Admin Link (Login / W2) */}

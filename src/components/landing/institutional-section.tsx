@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { HeartPulse, Home, RefreshCw, Landmark, Sparkles } from "lucide-react";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const InstitutionalSection: React.FC = () => {
   const odsList = [
@@ -43,7 +44,7 @@ export const InstitutionalSection: React.FC = () => {
               Apoio à Gestão e Sustentabilidade Urbana
             </h2>
             <p className="text-slate-605 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-              O Txeneza foi idealizado sob bases científicas para apoiar os planos locais de limpeza e higiene urbana. No âmbito do nosso estudo de viabilidade acadêmica, a solução desenha sinergias com entidades ativas na gestão de resíduos da Beira.
+              O <BrandName /> foi idealizado sob bases científicas para apoiar os planos locais de limpeza e higiene urbana. No âmbito do nosso estudo de viabilidade acadêmica, a solução desenha sinergias com entidades ativas na gestão de resíduos da Beira.
             </p>
 
             {/* Disclaimer Alert */}

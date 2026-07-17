@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Home, Zap, Store, HelpCircle } from "lucide-react";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const TargetAudienceSection: React.FC = () => {
   const groups = [
@@ -52,7 +53,7 @@ export const TargetAudienceSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
           <span className="text-xs font-black tracking-widest text-limeGreen uppercase">Impacto Social</span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mt-3">
-            Para Quem é o Txeneza?
+            Para Quem é o <BrandName />?
           </h2>
           <p className="text-slate-605 dark:text-slate-400 mt-4 text-base sm:text-lg leading-relaxed">
             Embora desenhada para toda a população da Beira, a nossa monografia científica identifica três grupos prioritários que mais sofrem com a ineficiência do saneamento e mais beneficiam da plataforma.
@@ -115,7 +116,7 @@ export const TargetAudienceSection: React.FC = () => {
           <div className="text-left">
             <h4 className="font-extrabold text-sm text-slate-800 dark:text-slate-200">Abordagem Inclusiva e Centrada no Cidadão</h4>
             <p className="text-xs text-slate-605 dark:text-slate-400 mt-1 leading-relaxed">
-              &ldquo;A inclusão digital de grupos historicamente vulneráveis na Beira é essencial para democratizar a gestão do saneamento. O Txeneza atua como ponte tecnológica reduzindo a assimetria na comunicação com o poder público municipal.&rdquo; <span className="text-slate-500 block mt-1">— Citação da Monografia Académica de Suporte.</span>
+              &ldquo;A inclusão digital de grupos historicamente vulneráveis na Beira é essencial para democratizar a gestão do saneamento. O <BrandName /> atua como ponte tecnológica reduzindo a assimetria na comunicação com o poder público municipal.&rdquo; <span className="text-slate-500 block mt-1">— Citação da Monografia Académica de Suporte.</span>
             </p>
           </div>
         </motion.div>

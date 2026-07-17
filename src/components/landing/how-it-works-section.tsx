@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Camera, MapPin, Sliders, CheckCircle } from "lucide-react";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const HowItWorksSection: React.FC = () => {
   const steps = [
@@ -60,7 +61,7 @@ export const HowItWorksSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
           <span className="text-xs font-black tracking-widest text-limeGreen uppercase">Fluxo de Reporte</span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mt-3">
-            Como Funciona o Txeneza?
+            Como Funciona o <BrandName />?
           </h2>
           <p className="text-slate-650 dark:text-slate-400 mt-4 text-base sm:text-lg leading-relaxed">
             Reportar um foco de lixo leva menos de 1 minuto. Desenvolvemos um fluxo simples e acessível para qualquer cidadão colaborar na melhoria do saneamento da cidade.

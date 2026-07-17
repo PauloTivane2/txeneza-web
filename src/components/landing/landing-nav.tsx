@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X, Map, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { motion, AnimatePresence } from "framer-motion";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const LandingNav: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,9 +43,7 @@ export const LandingNav: React.FC = () => {
             <div className="w-9 h-9 rounded-xl overflow-hidden shadow-lg border border-slate-800 bg-grey900/90 group-hover:scale-105 transition-all">
               <img src="/icons/TXENEZA.svg" alt="Txeneza Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="text-xl font-black tracking-tight text-white group-hover:text-limeGreen transition-colors">
-              Txeneza
-            </span>
+            <BrandName className="text-xl font-black tracking-tight" />
           </Link>
 
           {/* Desktop Navigation */}

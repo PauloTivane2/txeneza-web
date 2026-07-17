@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Award, BarChart3, Fingerprint } from "lucide-react";
+import { BrandName } from "@/components/ui/brand-name";
 
 export const SocialProofSection: React.FC = () => {
   const stats = [
@@ -10,7 +11,12 @@ export const SocialProofSection: React.FC = () => {
       percentage: 76.7,
       strokeDash: 240, // Visual representation for circle
       title: "Prontidão para Uso",
-      desc: "76,7% dos munícipes entrevistados afirmaram estar totalmente dispostos a adotar a aplicação Txeneza para denunciar problemas no seu bairro.",
+      desc: (
+        <>
+          76,7% dos munícipes entrevistados afirmaram estar totalmente dispostos a adotar a aplicação{" "}
+          <BrandName /> para denunciar problemas no seu bairro.
+        </>
+      ),
       label: "Dispostos a usar a App",
     },
     {
