@@ -36,6 +36,7 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   onChange,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useRef<any>(null);
 
   useEffect(() => {
@@ -66,13 +67,11 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
 
   if (!isMounted) {
     return (
-      <div className="w-full h-[320px] bg-grey100 animate-pulse rounded-xl flex items-center justify-center border border-grey200">
-        <span className="text-grey600 text-sm">A carregar mapa...</span>
+      <div className="w-full h-[320px] bg-grey100 dark:bg-grey900 animate-pulse rounded-xl flex items-center justify-center border border-grey200 dark:border-grey800">
+        <span className="text-grey600 dark:text-grey400 text-sm">A carregar mapa...</span>
       </div>
     );
   }
-
-  const [mapLoaded, setMapLoaded] = useState(false);
 
   return (
     <div className="flex flex-col gap-2.5">

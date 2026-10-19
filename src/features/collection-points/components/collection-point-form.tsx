@@ -2,9 +2,21 @@
 
 import React from "react";
 import { MapPin, Plus, Loader2, Pencil, X, CheckCircle2, XCircle, AlertTriangle, ArrowLeftRight } from "lucide-react";
+import dynamic from "next/dynamic";
 import { Combobox } from "@/components/ui/combobox";
 import { BAIRROS_BEIRA_NOMES } from "@/core/geo/beira-bairros";
-import { LocationPickerMap } from "@/features/map/components/location-picker-map";
+
+const LocationPickerMap = dynamic(
+  () => import("@/features/map/components/location-picker-map").then((m) => m.LocationPickerMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[320px] bg-grey100 dark:bg-grey900 animate-pulse rounded-xl flex items-center justify-center border border-grey200 dark:border-grey800">
+        <span className="text-grey600 dark:text-grey400 text-sm">A carregar mapa...</span>
+      </div>
+    ),
+  }
+);
 
 interface CollectionPointFormProps {
   form: {

@@ -77,28 +77,28 @@ export const LocationSearchInput: React.FC<LocationSearchInputProps> = ({
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
           placeholder={placeholder}
-          className="w-full bg-white border border-grey200 rounded-xl py-2.5 pl-9 pr-3.5 text-sm text-grey900 placeholder:text-grey400 focus:outline-none focus:border-limeGreen/60 focus:ring-2 focus:ring-limeGreen/10 transition-all shadow-sm"
+          className="w-full bg-white dark:bg-grey950 border border-grey200 dark:border-grey800 rounded-xl py-2.5 pl-9 pr-3.5 text-sm text-grey900 dark:text-grey50 placeholder:text-grey400 dark:placeholder:text-grey600 focus:outline-none focus:border-limeGreen/60 focus:ring-2 focus:ring-limeGreen/10 transition-all shadow-sm"
         />
       </div>
 
       {open && results.length > 0 && (
-        <div className="absolute z-30 top-full mt-1.5 w-full bg-white border border-grey200 rounded-xl shadow-xl overflow-hidden max-h-64 overflow-y-auto">
+        <div className="absolute z-30 top-full mt-1.5 w-full bg-white dark:bg-grey900 border border-grey200 dark:border-grey800 rounded-xl shadow-xl overflow-hidden max-h-64 overflow-y-auto">
           {results.map((result) => (
             <button
               key={result.id}
               type="button"
               onClick={() => handleSelect(result)}
-              className="w-full text-left px-3.5 py-2.5 flex items-start gap-2.5 hover:bg-grey100 transition-colors border-b border-grey100 last:border-b-0"
+              className="w-full text-left px-3.5 py-2.5 flex items-start gap-2.5 hover:bg-grey100 dark:hover:bg-grey800 transition-colors border-b border-grey100 dark:border-grey800 last:border-b-0"
             >
-              <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-forestGreen" />
-              <span className="text-xs text-grey800 leading-snug">{result.placeName}</span>
+              <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-forestGreen dark:text-limeGreen" />
+              <span className="text-xs text-grey800 dark:text-grey200 leading-snug">{result.placeName}</span>
             </button>
           ))}
         </div>
       )}
 
       {open && !loading && query.trim().length >= 3 && results.length === 0 && (
-        <div className="absolute z-30 top-full mt-1.5 w-full bg-white border border-grey200 rounded-xl shadow-xl px-3.5 py-3 text-xs text-grey500">
+        <div className="absolute z-30 top-full mt-1.5 w-full bg-white dark:bg-grey900 border border-grey200 dark:border-grey800 rounded-xl shadow-xl px-3.5 py-3 text-xs text-grey500 dark:text-grey400">
           Nenhum local encontrado na região da Beira.
         </div>
       )}
