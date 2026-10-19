@@ -5,7 +5,7 @@ import { MapView, PontoRecolhaMapData } from "@/features/map/components/map-view
 import { useMapStore } from "@/features/map/map.store";
 import { MapSkeleton } from "@/features/map/components/map-skeleton";
 import { OccurrenceCard } from "@/features/occurrences/components/occurrence-card";
-import { Map as MapIcon, MapPin, Info, X, WifiOff } from "lucide-react";
+import { Map as MapIcon, MapPin, Info, X, WifiOff, AlertTriangle } from "lucide-react";
 
 export default function AdminMapPage() {
   const { markers, fetchMapData, loading, selectedOccurrence, setSelectedOccurrence } = useMapStore();
@@ -96,6 +96,12 @@ export default function AdminMapPage() {
                   <MapPin className="w-4 h-4 text-red-500" />
                 </span>
                 <span className="text-grey900 dark:text-grey50">Foco de resíduos denunciado</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="p-1 bg-amber-500 border border-amber-300 rounded-lg shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-white" />
+                </span>
+                <span className="text-grey900 dark:text-grey50">Ocorrência fora da Beira</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="p-1 bg-forestGreen border border-limeGreen rounded-full shrink-0 w-6 h-6 flex items-center justify-center">

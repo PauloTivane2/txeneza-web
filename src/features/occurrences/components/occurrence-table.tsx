@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { Occurrence } from "@/features/occurrences/occurrences.types";
 import { OCCURRENCE_STATUS_META } from "@/features/occurrences/occurrence-status";
-import { ImageIcon, MapPin, ChevronRight, Trash2 } from "lucide-react";
+import { ImageIcon, MapPin, ChevronRight, Trash2, AlertTriangle } from "lucide-react";
+import { resolveBairro, FORA_DA_BEIRA } from "@/core/geo/beira-bairros";
 
 interface OccurrenceTableProps {
   occurrences: Occurrence[];
@@ -48,36 +49,62 @@ export const OccurrenceTable: React.FC<OccurrenceTableProps> = ({ occurrences, o
           <tbody className="divide-y divide-grey200 dark:divide-grey800">
             {occurrences.map((occ) => {
               const meta = OCCURRENCE_STATUS_META[occ.status];
+              const geo = resolveBairro(occ.latitude, occ.longitude);
+              const isFora = occ.bairro === FORA_DA_BEIRA || !geo.isDentroDaBeira;
+
               return (
                 <tr
                   key={occ.id}
                   onClick={() => onSelect?.(occ)}
-                  className="hover:bg-grey100 dark:hover:bg-grey900/40 transition-colors cursor-pointer group"
+                  className={`hover:bg-grey100 dark:hover:bg-grey900/40 transition-colors cursor-pointer group ${
+                    isFora ? "bg-amber-500/[0.04] dark:bg-amber-500/[0.06] border-l-4 border-l-amber-500" : ""
+                  }`}
                 >
                   {/* Ocorrência: miniatura + título + bairro */}
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <Thumb occ={occ} />
                       <div className="min-w-0">
-                        <p className="font-bold text-grey900 dark:text-grey50 truncate max-w-[220px]">
-                          {occ.title}
-                        </p>
-                        {occ.bairro && (
-                          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-                            <span className="inline-flex items-center gap-1 text-xs text-grey600 dark:text-grey400 font-medium">
-                              <MapPin className="w-3 h-3 text-forestGreen dark:text-limeGreen shrink-0" />
-                              {occ.bairro}
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-grey900 dark:text-grey50 truncate max-w-[220px]">
+                            {occ.title}
+                          </p>
+                          {isFora && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                              <AlertTriangle className="w-2.5 h-2.5" />
+                              Fora da Área
                             </span>
-                            {occ.reporterBairro && occ.reporterBairro !== occ.bairro && (
-                              <span
-                                className="text-[10px] text-grey600 dark:text-grey400 bg-grey200/60 dark:bg-grey800/80 px-1.5 py-0.5 rounded font-normal"
-                                title={`Munícipe reside em: ${occ.reporterBairro}`}
-                              >
-                                Morador de {occ.reporterBairro}
+                          )}
+                        </div>
+
+                        {/* Localização / Bairro com destaque */}
+                        <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                          {isFora ? (
+                            <span
+                              className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md"
+                              title={`Coordenadas a aprox. ${geo.distanciaCentroKm} km da Beira`}
+                            >
+                              <MapPin className="w-3 h-3 text-amber-500 shrink-0" />
+                              Fora da Beira ({geo.distanciaCentroKm > 999 ? "+999" : geo.distanciaCentroKm} km)
+                            </span>
+                          ) : (
+                            occ.bairro && (
+                              <span className="inline-flex items-center gap-1 text-xs text-grey600 dark:text-grey400 font-medium">
+                                <MapPin className="w-3 h-3 text-forestGreen dark:text-limeGreen shrink-0" />
+                                {occ.bairro}
                               </span>
-                            )}
-                          </div>
-                        )}
+                            )
+                          )}
+
+                          {occ.reporterBairro && occ.reporterBairro !== occ.bairro && (
+                            <span
+                              className="text-[10px] text-grey600 dark:text-grey400 bg-grey200/60 dark:bg-grey800/80 px-1.5 py-0.5 rounded font-normal"
+                              title={`Munícipe reside em: ${occ.reporterBairro}`}
+                            >
+                              Morador de {occ.reporterBairro}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </td>

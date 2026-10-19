@@ -72,6 +72,8 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     );
   }
 
+  const [mapLoaded, setMapLoaded] = useState(false);
+
   return (
     <div className="flex flex-col gap-2.5">
       <LocationSearchInput onSelect={handleSearchSelect} />
@@ -85,24 +87,25 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
             zoom: DEFAULT_ZOOM,
           }}
           style={{ width: "100%", height: "100%" }}
-          // O mapa de escolha de localização mantém-se sempre claro,
-          // independentemente do tema do site (ver nota em map-view.tsx).
           mapStyle="mapbox://styles/mapbox/light-v11"
           mapboxAccessToken={env.mapboxToken}
+          onLoad={() => setMapLoaded(true)}
           onClick={handleMapClick}
           cursor="pointer"
         >
-          <Marker
-            latitude={pinLat}
-            longitude={pinLng}
-            anchor="bottom"
-            draggable
-            onDragEnd={handleMarkerDragEnd}
-          >
-            <div className="cursor-grab active:cursor-grabbing -mt-1">
-              <MapPin className="w-8 h-8 text-red-500 drop-shadow-lg" fill="currentColor" strokeWidth={1.5} stroke="white" />
-            </div>
-          </Marker>
+          {mapLoaded && (
+            <Marker
+              latitude={pinLat}
+              longitude={pinLng}
+              anchor="bottom"
+              draggable
+              onDragEnd={handleMarkerDragEnd}
+            >
+              <div className="cursor-grab active:cursor-grabbing -mt-1">
+                <MapPin className="w-8 h-8 text-red-500 drop-shadow-lg" fill="currentColor" strokeWidth={1.5} stroke="white" />
+              </div>
+            </Marker>
+          )}
         </Map>
 
         <div className="absolute bottom-2 left-2 right-2 flex justify-center pointer-events-none">

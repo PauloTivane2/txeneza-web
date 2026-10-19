@@ -85,25 +85,74 @@ export function normalizeBairroName(input: string): string {
   return directMatch ? directMatch.nome : trim;
 }
 
-/**
- * Determina o bairro canónico oficial da Beira mais próximo de um par de coordenadas (lat, lng).
- * Utiliza distância euclidiana simples ajustada à escala local da Beira.
- */
-export function findClosestBairro(lat: number, lng: number): string {
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return "Beira";
+export const BEIRA_BOUNDING_BOX = {
+  minLat: -20.0000,
+  maxLat: -19.6500,
+  minLng: 34.7500,
+  maxLng: 35.0000,
+} as const;
 
-  let closestName = "Beira";
-  let minSquareDist = Infinity;
+export const MAX_BEIRA_TOLERANCE_KM = 15.0;
+export const FORA_DA_BEIRA = "Fora da Beira";
+
+export interface BairroResolution {
+  nome: string;
+  isDentroDaBeira: boolean;
+  distanciaCentroKm: number;
+}
+
+/**
+ * Resolve a integridade espacial de um ponto em relação à Cidade da Beira.
+ */
+export function resolveBairro(lat: number, lng: number): BairroResolution {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return {
+      nome: FORA_DA_BEIRA,
+      isDentroDaBeira: false,
+      distanciaCentroKm: Infinity,
+    };
+  }
+
+  const foraBoundingBox =
+    lat < BEIRA_BOUNDING_BOX.minLat ||
+    lat > BEIRA_BOUNDING_BOX.maxLat ||
+    lng < BEIRA_BOUNDING_BOX.minLng ||
+    lng > BEIRA_BOUNDING_BOX.maxLng;
+
+  let closestName = "Central";
+  let minDistanceKm = Infinity;
 
   for (const b of BAIRROS_BEIRA) {
-    const dLat = lat - b.center[0];
-    const dLng = lng - b.center[1];
-    const distSq = dLat * dLat + dLng * dLng;
-    if (distSq < minSquareDist) {
-      minSquareDist = distSq;
+    const dLatKm = (lat - b.center[0]) * 110.574;
+    const dLngKm = (lng - b.center[1]) * 111.320 * Math.cos((b.center[0] * Math.PI) / 180);
+    const distKm = Math.sqrt(dLatKm * dLatKm + dLngKm * dLngKm);
+
+    if (distKm < minDistanceKm) {
+      minDistanceKm = distKm;
       closestName = b.nome;
     }
   }
 
-  return closestName;
+  const isDentro = !foraBoundingBox && minDistanceKm <= MAX_BEIRA_TOLERANCE_KM;
+
+  return {
+    nome: isDentro ? closestName : FORA_DA_BEIRA,
+    isDentroDaBeira: isDentro,
+    distanciaCentroKm: Math.round(minDistanceKm * 10) / 10,
+  };
+}
+
+/**
+ * Verifica rapidamente se uma coordenada GPS pertence ao perímetro municipal da Beira.
+ */
+export function isCoordenadaNaBeira(lat: number, lng: number): boolean {
+  return resolveBairro(lat, lng).isDentroDaBeira;
+}
+
+/**
+ * Determina o bairro canónico oficial da Beira mais próximo de um par de coordenadas (lat, lng).
+ * Se a coordenada estiver fora do perímetro municipal de 15 km, retorna "Fora da Beira".
+ */
+export function findClosestBairro(lat: number, lng: number): string {
+  return resolveBairro(lat, lng).nome;
 }

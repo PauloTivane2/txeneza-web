@@ -76,16 +76,18 @@ export const HeatmapView: React.FC<HeatmapViewProps> = ({
 
   const geojsonSource: any = {
     type: "FeatureCollection",
-    features: data.map((point) => ({
-      type: "Feature" as const,
-      properties: {
-        intensity: point.intensity || 1,
-      },
-      geometry: {
-        type: "Point" as const,
-        coordinates: [point.lng, point.lat],
-      },
-    })),
+    features: data
+      .filter((point) => point && Number.isFinite(Number(point.lng)) && Number.isFinite(Number(point.lat)))
+      .map((point) => ({
+        type: "Feature" as const,
+        properties: {
+          intensity: point.intensity || 1,
+        },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [Number(point.lng), Number(point.lat)],
+        },
+      })),
   };
 
   return (

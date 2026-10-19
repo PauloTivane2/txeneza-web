@@ -25,7 +25,9 @@ import {
   Map as MapIcon,
   Loader2,
   Trash2,
+  AlertTriangle,
 } from "lucide-react";
+import { resolveBairro, FORA_DA_BEIRA } from "@/core/geo/beira-bairros";
 
 const STATUS_TONE: Record<OccurrenceStatus, ConfirmTone> = {
   pendente: "warning",
@@ -146,6 +148,8 @@ export default function OccurrenceDetailPage({ params }: PageProps) {
   }
 
   const meta = OCCURRENCE_STATUS_META[occurrence.status];
+  const geo = resolveBairro(occurrence.latitude, occurrence.longitude);
+  const isFora = occurrence.bairro === FORA_DA_BEIRA || !geo.isDentroDaBeira;
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl">
@@ -175,6 +179,23 @@ export default function OccurrenceDetailPage({ params }: PageProps) {
         </span>
       </div>
 
+      {/* Aviso Crítico de Localização Fora do Município */}
+      {isFora && (
+        <div className="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 flex items-start gap-3.5 text-amber-800 dark:text-amber-300">
+          <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">
+            <AlertTriangle className="w-5 h-5" />
+          </div>
+          <div className="flex-1 leading-normal">
+            <h4 className="text-sm font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
+              Anomalia Geográfica: Coordenadas Fora do Município da Beira
+            </h4>
+            <p className="text-xs text-amber-800/90 dark:text-amber-300/90 mt-1">
+              Esta ocorrência possui coordenadas GPS ({occurrence.latitude.toFixed(5)}, {occurrence.longitude.toFixed(5)}) situadas a aproximadamente <strong className="font-extrabold underline">{geo.distanciaCentroKm} km</strong> da Cidade da Beira. O registo não pertence a nenhum dos 31 bairros oficiais sob gestão do Conselho Municipal da Beira (CMB).
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Imagem da denúncia */}
       {occurrence.imageUrl && !imgError ? (
         <img
@@ -200,7 +221,16 @@ export default function OccurrenceDetailPage({ params }: PageProps) {
 
       {/* Detalhes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <DetailRow icon={<MapPin className="w-4 h-4" />} label="Bairro da Ocorrência" value={occurrence.bairro || "—"} />
+        <DetailRow
+          icon={<MapPin className="w-4 h-4" />}
+          label="Bairro da Ocorrência"
+          value={
+            isFora
+              ? `Fora da Beira (aprox. ${geo.distanciaCentroKm} km)`
+              : occurrence.bairro || "—"
+          }
+          accent={isFora}
+        />
         <DetailRow
           icon={<User className="w-4 h-4" />}
           label="Reportado por"
@@ -237,44 +267,53 @@ export default function OccurrenceDetailPage({ params }: PageProps) {
         </Link>
       </div>
 
-      {/* Provas de resolução já registadas */}
-      <ResolutionGallery verifications={verifications} />
+      {/* Provas de resolução já registadas (apenas para ocorrências sob jurisdição municipal) */}
+      {!isFora && <ResolutionGallery verifications={verifications} />}
 
       {/* Ações de gestão */}
       <div className="p-6 bg-light-background dark:bg-dark-background border border-grey200 dark:border-grey800 rounded-2xl flex flex-col gap-6">
-        <div>
-          <h3 className="text-xs font-bold text-grey600 dark:text-grey400 uppercase tracking-wider mb-4">
-            Alterar Estado
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {OCCURRENCE_STATUS_ORDER.map((s) => {
-              const m = OCCURRENCE_STATUS_META[s];
-              const isCurrent = occurrence.status === s;
-              return (
-                <button
-                  key={s}
-                  onClick={() => {
-                    setPendingStatus(s);
-                    if (s === "resolvido") setProofModalOpen(true);
-                  }}
-                  disabled={isCurrent || updating !== null}
-                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all disabled:cursor-not-allowed ${
-                    isCurrent
-                      ? `${m.badge} opacity-100`
-                      : "bg-grey100 dark:bg-grey900 border-grey200 dark:border-grey800 text-grey700 dark:text-grey300 hover:border-grey300 dark:hover:border-grey700 disabled:opacity-50"
-                  }`}
-                >
-                  {updating === s ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <span className={`w-1.5 h-1.5 rounded-full ${m.dot}`} />
-                  )}
-                  {isCurrent ? `Estado atual: ${m.label}` : m.label}
-                </button>
-              );
-            })}
+        {!isFora ? (
+          <div>
+            <h3 className="text-xs font-bold text-grey600 dark:text-grey400 uppercase tracking-wider mb-4">
+              Alterar Estado
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {OCCURRENCE_STATUS_ORDER.map((s) => {
+                const m = OCCURRENCE_STATUS_META[s];
+                const isCurrent = occurrence.status === s;
+                return (
+                  <button
+                    key={s}
+                    onClick={() => {
+                      setPendingStatus(s);
+                      if (s === "resolvido") setProofModalOpen(true);
+                    }}
+                    disabled={isCurrent || updating !== null}
+                    className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all disabled:cursor-not-allowed ${
+                      isCurrent
+                        ? `${m.badge} opacity-100`
+                        : "bg-grey100 dark:bg-grey900 border-grey200 dark:border-grey800 text-grey700 dark:text-grey300 hover:border-grey300 dark:hover:border-grey700 disabled:opacity-50"
+                    }`}
+                  >
+                    {updating === s ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <span className={`w-1.5 h-1.5 rounded-full ${m.dot}`} />
+                    )}
+                    {isCurrent ? `Estado atual: ${m.label}` : m.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-3">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+            <span>
+              A opção de alterar estado encontra-se desativada porque as coordenadas georreferenciadas desta denúncia situam-se fora da jurisdição territorial do Município da Beira.
+            </span>
+          </div>
+        )}
 
         <div className="pt-4 border-t border-grey200 dark:border-grey800 flex justify-between items-center">
           <div>

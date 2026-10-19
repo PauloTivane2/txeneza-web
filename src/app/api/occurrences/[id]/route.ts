@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { enviarPush } from "@/features/notifications/push.service";
 import { verifyAdminSession, unauthorizedResponse } from "@/core/server-auth";
 
-import { findClosestBairro } from "@/core/geo/beira-bairros";
+import { findClosestBairro, isCoordenadaNaBeira, FORA_DA_BEIRA } from "@/core/geo/beira-bairros";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -93,6 +93,22 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return NextResponse.json(
         { error: "Status não fornecido." },
         { status: 400 }
+      );
+    }
+
+    const existing = await prisma.ocorrencia.findUnique({
+      where: { id_ocorrencia: id },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Ocorrência não encontrada." }, { status: 404 });
+    }
+
+    const isFora = existing.bairro === FORA_DA_BEIRA || !isCoordenadaNaBeira(Number(existing.latitude), Number(existing.longitude));
+    if (isFora) {
+      return NextResponse.json(
+        { error: "Não é permitido alterar o estado de ocorrências com localização fora do Município da Beira." },
+        { status: 403 }
       );
     }
 
