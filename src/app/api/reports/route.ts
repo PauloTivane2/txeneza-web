@@ -81,19 +81,21 @@ async function getDatabaseOccurrences() {
         ? `${supabaseUrl}/storage/v1/object/public/denuncias/${o.fotografias[0].caminho_ficheiro}`
         : undefined;
 
+      const categoryName = o.categoria?.nome || "Resíduo";
+
       return {
         id: o.id_ocorrencia,
-        title: `Ocorrência de ${o.categoria.nome}`,
+        title: `Ocorrência de ${categoryName}`,
         description: o.descricao || "",
-        category: o.categoria.nome,
+        category: categoryName,
         latitude: lat,
         longitude: lng,
         bairro: occurrenceBairro,
         status,
-        createdAt: o.data_hora_registo.toISOString(),
+        createdAt: o.data_hora_registo ? o.data_hora_registo.toISOString() : new Date().toISOString(),
         updatedAt: o.data_hora_sync ? o.data_hora_sync.toISOString() : undefined,
-        reportedBy: o.utilizador.nome,
-        reporterBairro: o.utilizador.bairro,
+        reportedBy: o.utilizador?.nome || "Utilizador anónimo",
+        reporterBairro: o.utilizador?.bairro || "Não informado",
         imageUrl,
         gravidade: o.gravidade,
       };

@@ -47,19 +47,21 @@ export async function GET(request: Request) {
         ? `${supabaseUrl}/storage/v1/object/public/denuncias/${o.fotografias[0].caminho_ficheiro}`
         : undefined;
 
+      const categoryName = o.categoria?.nome || "Resíduo";
+
       return {
         id: o.id_ocorrencia,
-        title: `Ocorrência de ${o.categoria.nome}`,
+        title: `Ocorrência de ${categoryName}`,
         description: o.descricao || "",
-        category: o.categoria.nome,
+        category: categoryName,
         latitude: lat,
         longitude: lng,
         bairro: occurrenceBairro,
         status,
-        createdAt: o.data_hora_registo.toISOString(),
+        createdAt: o.data_hora_registo ? o.data_hora_registo.toISOString() : new Date().toISOString(),
         updatedAt: o.data_hora_sync ? o.data_hora_sync.toISOString() : undefined,
-        reportedBy: session ? o.utilizador.nome : undefined,
-        reporterBairro: session ? o.utilizador.bairro : undefined,
+        reportedBy: session ? (o.utilizador?.nome || "Utilizador anónimo") : undefined,
+        reporterBairro: session ? (o.utilizador?.bairro || "Não informado") : undefined,
         imageUrl,
         gravidade: o.gravidade,
       };
@@ -67,6 +69,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(serialized);
   } catch (error: any) {
+    console.error("Erro em /api/occurrences GET:", error);
     return NextResponse.json(
       { error: "Erro ao carregar ocorrências: " + error.message },
       { status: 500 }

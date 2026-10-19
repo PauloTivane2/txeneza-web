@@ -7,7 +7,10 @@ import { Occurrence, OccurrenceFilter } from "./occurrences.types";
 export const occurrencesService = {
   async getAll(filters?: OccurrenceFilter): Promise<Occurrence[]> {
     const res = await fetch("/api/occurrences", { cache: "no-store" });
-    if (!res.ok) throw new Error("Erro ao buscar ocorrências no servidor.");
+    if (!res.ok) {
+      const errData = await res.json().catch(() => null);
+      throw new Error(errData?.error || `Erro ao buscar ocorrências no servidor (HTTP ${res.status}).`);
+    }
     
     let occurrences: Occurrence[] = await res.json();
     

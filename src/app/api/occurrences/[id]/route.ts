@@ -25,19 +25,21 @@ function serialize(o: any, isAdmin: boolean) {
     ? `${supabaseUrl}/storage/v1/object/public/denuncias/${o.fotografias[0].caminho_ficheiro}`
     : undefined;
 
+  const categoryName = o.categoria?.nome || "Resíduo";
+
   return {
     id: o.id_ocorrencia,
-    title: `Ocorrência de ${o.categoria.nome}`,
+    title: `Ocorrência de ${categoryName}`,
     description: o.descricao || "",
-    category: o.categoria.nome,
+    category: categoryName,
     latitude: lat,
     longitude: lng,
     bairro: occurrenceBairro,
     status,
-    createdAt: o.data_hora_registo.toISOString(),
+    createdAt: o.data_hora_registo ? o.data_hora_registo.toISOString() : new Date().toISOString(),
     updatedAt: o.data_hora_sync ? o.data_hora_sync.toISOString() : undefined,
-    reportedBy: isAdmin ? o.utilizador.nome : undefined,
-    reporterBairro: isAdmin ? o.utilizador.bairro : undefined,
+    reportedBy: isAdmin ? (o.utilizador?.nome || "Utilizador anónimo") : undefined,
+    reporterBairro: isAdmin ? (o.utilizador?.bairro || "Não informado") : undefined,
     imageUrl,
     gravidade: o.gravidade,
   };
@@ -164,7 +166,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
       // Disparar notificação push FCM
       await enviarPush({
-        fcmToken: atualizado.utilizador.fcm_token,
+        fcmToken: atualizado.utilizador?.fcm_token,
         tipo: "alteracao_estado",
         mensagem: mensagemNotif,
         idOcorrencia: atualizado.id_ocorrencia,
