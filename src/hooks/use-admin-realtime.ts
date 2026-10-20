@@ -184,9 +184,10 @@ export function useAdminRealtime() {
           if (!updatedRow) return;
 
           let status: OccurrenceStatus = "pendente";
-          if (updatedRow.estado === "em_analise") status = "em-progresso";
-          else if (updatedRow.estado === "resolvida") status = "resolvido";
-          else if (updatedRow.estado === "rejeitada") status = "rejeitado";
+          const est = String(updatedRow.estado || "").toLowerCase();
+          if (est === "em_analise" || est === "em_progresso" || est === "em-progresso") status = "em-progresso";
+          else if (est === "resolvida" || est === "resolvido" || est === "concluido" || est === "concluida") status = "resolvido";
+          else if (est === "rejeitada" || est === "rejeitado") status = "rejeitado";
 
           const updateLat = Number(updatedRow.latitude);
           const updateLng = Number(updatedRow.longitude);
@@ -208,6 +209,14 @@ export function useAdminRealtime() {
 
           useOccurrencesStore.getState().addOrUpdateOccurrence(occurrenceObj);
           useMapStore.getState().addOrUpdateMarker(occurrenceObj);
+          useDashboardStore.getState().fetchStats(true);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "verificacao_resolucao" },
+        () => {
+          useMapStore.getState().fetchMapData();
           useDashboardStore.getState().fetchStats(true);
         }
       )
