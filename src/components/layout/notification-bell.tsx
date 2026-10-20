@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useNotificationsStore } from "@/features/notifications/notifications.store";
 import { notificationSound } from "@/lib/notification-sound";
+import { formatNotificationTimeMaputo } from "@/lib/date";
 
 export const NotificationBell: React.FC = () => {
   const router = useRouter();
@@ -112,25 +113,7 @@ export const NotificationBell: React.FC = () => {
   }, [notifications]);
 
   const formatNotificationTime = (isoDate: string) => {
-    try {
-      const date = new Date(isoDate);
-      const now = new Date();
-      const diffMs = now.getTime() - date.getTime();
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMins / 60);
-
-      if (diffMins < 1) return "Agora mesmo";
-      if (diffMins < 60) return `Há ${diffMins} min`;
-      if (diffHours < 24) return `Há ${diffHours} h`;
-      return date.toLocaleDateString("pt-PT", {
-        day: "2-digit",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return "Recente";
-    }
+    return formatNotificationTimeMaputo(isoDate);
   };
 
   const getNotificationIcon = (type: string, message: string) => {

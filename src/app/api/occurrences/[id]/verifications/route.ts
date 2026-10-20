@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { supabaseAdmin } from "@/core/supabase-admin";
-import { aiVerificationService } from "@/features/occurrences/ai-verification.service";
 import { verifyAdminSession, unauthorizedResponse } from "@/core/server-auth";
 import { enviarPush } from "@/features/notifications/push.service";
 
@@ -120,31 +119,7 @@ export async function POST(request: Request, { params }: RouteParams) {
       savedPath = `data:${mimeType};base64,${buffer.toString("base64")}`;
     }
 
-    // 3. Executar Verificação por IA
-    const originalPhotoPath = occurrence.fotografias[0]?.caminho_ficheiro;
-    // A IA precisa de uma URL pública real para descarregar a foto original
-    // e comparar com a de resolução — um caminho de storage por si só
-    // (ex: "denuncia/abc.jpg") não é acessível pela API do Gemini.
-    const originalPhotoUrl = originalPhotoPath
-      ? supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(originalPhotoPath).data.publicUrl
-      : null;
-    const aiResult = await aiVerificationService.verifyResolution(
-      originalPhotoUrl,
-      buffer,
-      notes
-    );
-
-    // Se o cliente explicitamente enviou resultado ou se a IA detetou nao_resolvida
-    const finalResultado: "resolvida" | "nao_resolvida" =
-      customResult === "nao_resolvida" || aiResult.resultado === "nao_resolvida"
-        ? "nao_resolvida"
-        : "resolvida";
-
-    const finalNotes = notes
-      ? `${notes} (IA: ${aiResult.observacoes})`
-      : aiResult.observacoes;
-
-    // 4. Salvar registo de Fotografia no Prisma
+    // 3. Salvar registo de Fotografia no Prisma
     const novaFoto = await prisma.fotografia.create({
       data: {
         id_ocorrencia: occurrenceId,
@@ -154,7 +129,7 @@ export async function POST(request: Request, { params }: RouteParams) {
       },
     });
 
-    // 5. Determinar ID do utilizador (usando session ou utilizador da ocorrência/admin)
+    // 4. Determinar ID do utilizador (usando session ou utilizador da ocorrência/admin)
     let utilizadorId = session.uid;
     const validUser = await prisma.utilizador.findUnique({ where: { id_utilizador: utilizadorId } });
     if (!validUser) {
@@ -163,23 +138,26 @@ export async function POST(request: Request, { params }: RouteParams) {
       utilizadorId = adminDb ? adminDb.id_utilizador : occurrence.id_utilizador;
     }
 
-    // 6. Salvar VerificacaoResolucao no banco
+    const finalResultado: "resolvida" | "nao_resolvida" = "resolvida";
+    const finalNotes = notes || "Prova fotográfica de resolução registada pela equipa municipal.";
+
+    // 5. Salvar VerificacaoResolucao no banco
     const novaVerificacao = await prisma.verificacaoResolucao.create({
       data: {
         id_ocorrencia: occurrenceId,
         id_utilizador: utilizadorId,
         id_foto_verificacao: novaFoto.id_fotografia,
         resultado: finalResultado,
-        confianca_comparacao: aiResult.confianca,
+        confianca_comparacao: 100.0,
         observacoes: finalNotes,
         data_hora: new Date(),
       },
     });
 
-    // 7. LÓGICA DE REABERTURA AUTOMÁTICA / ATUALIZAÇÃO DE ESTADO
-    // Se o resultado for 'nao_resolvida', altera o estado para 'reaberta'
-    // Se 'resolvida', altera o estado para 'resolvida'
-    const novoEstadoOcorrencia = finalResultado === "nao_resolvida" ? "reaberta" : "resolvida";
+    // 6. ATUALIZAÇÃO DO ESTADO DA OCORRÊNCIA PARA RESOLVIDA
+    // A anexação da prova marca a ocorrência como resolvida.
+    // A reabertura é prerrogativa exclusiva do munícipe após conferência no mobile.
+    const novoEstadoOcorrencia = "resolvida";
 
     await prisma.ocorrencia.update({
       where: { id_ocorrencia: occurrenceId },
@@ -189,14 +167,10 @@ export async function POST(request: Request, { params }: RouteParams) {
       },
     });
 
-    // REGISTO AUTOMÁTICO DE NOTIFICAÇÃO NA BASE DE DADOS
+    // 7. REGISTO DE NOTIFICAÇÃO NA BASE DE DADOS E PUSH NOTIFICATION
     try {
-      const msgNotif =
-        finalResultado === "nao_resolvida"
-          ? `A verificação por IA identificou que a limpeza está incompleta. A ocorrência foi automaticamente reaberta.`
-          : `A prova de resolução foi validada com sucesso. A ocorrência foi marcada como resolvida.`;
-
-      const tipoNotif = finalResultado === "nao_resolvida" ? "reabertura_automatica" : "resolucao_validada";
+      const msgNotif = "A equipa municipal anexou a prova de intervenção. A ocorrência foi marcada como resolvida.";
+      const tipoNotif = "resolucao_validada";
 
       await prisma.notificacao.create({
         data: {
@@ -209,8 +183,7 @@ export async function POST(request: Request, { params }: RouteParams) {
         },
       });
 
-      // Push real (FCM) — melhor esforço: nunca bloqueia nem falha a
-      // resposta principal se o envio não funcionar (ver push.service.ts).
+      // Push real (FCM) para o morador no mobile
       await enviarPush({
         fcmToken: occurrence.utilizador.fcm_token,
         tipo: tipoNotif,

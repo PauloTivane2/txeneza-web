@@ -45,7 +45,7 @@ export const ResolutionGallery: React.FC<ResolutionGalleryProps> = ({ verificati
           <Camera className="w-3.5 h-3.5" /> Provas de Resolução ({verifications.length})
         </h3>
         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-forestGreen/10 dark:bg-limeGreen/10 text-forestGreen dark:text-limeGreen flex items-center gap-1">
-          <ShieldCheck className="w-3 h-3" /> Verificado por IA
+          <ShieldCheck className="w-3 h-3" /> Registo Oficial
         </span>
       </div>
 
@@ -59,21 +59,19 @@ export const ResolutionGallery: React.FC<ResolutionGalleryProps> = ({ verificati
 
             <div className="absolute top-1.5 right-1.5 z-10">
               {v.result === "resolvida" ? (
-                <span className="p-1 rounded-full bg-emerald-600 text-white shadow flex items-center justify-center" title="Confirmado como resolvido">
+                <span className="p-1 rounded-full bg-emerald-600 text-white shadow flex items-center justify-center" title="Intervenção registada como resolvida">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                 </span>
               ) : (
-                <span className="p-1 rounded-full bg-red-600 text-white shadow flex items-center justify-center" title="Não resolvido / Reaberto">
+                <span className="p-1 rounded-full bg-red-600 text-white shadow flex items-center justify-center" title="Intervenção contestada">
                   <XCircle className="w-3.5 h-3.5" />
                 </span>
               )}
             </div>
 
             <div className="absolute inset-x-0 bottom-0 bg-black/70 px-2 py-1 flex justify-between items-center text-[10px] text-white font-mono">
-              <span>{new Date(v.createdAt).toLocaleDateString("pt-PT")}</span>
-              {v.confianca !== undefined && (
-                <span className="text-lime-400 font-bold">{v.confianca}% IA</span>
-              )}
+              <span>{new Date(v.createdAt).toLocaleDateString("pt-PT", { timeZone: "Africa/Maputo" })}</span>
+              <span className="text-lime-400 font-bold">CMB</span>
             </div>
 
             {v.notes && (
