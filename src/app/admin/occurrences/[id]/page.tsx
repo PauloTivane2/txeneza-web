@@ -28,6 +28,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { resolveBairro, FORA_DA_BEIRA } from "@/core/geo/beira-bairros";
+import { formatMaputoDateTime } from "@/lib/date";
 
 const STATUS_TONE: Record<OccurrenceStatus, ConfirmTone> = {
   pendente: "warning",
@@ -245,7 +246,7 @@ export default function OccurrenceDetailPage({ params }: PageProps) {
         <DetailRow
           icon={<Calendar className="w-4 h-4" />}
           label="Reportado em"
-          value={new Date(occurrence.createdAt).toLocaleString("pt-PT", { timeZone: "Africa/Maputo" })}
+          value={formatMaputoDateTime(occurrence.createdAt)}
         />
       </div>
 

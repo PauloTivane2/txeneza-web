@@ -10,6 +10,7 @@ import { useDashboardStore } from "@/features/dashboard/dashboard.store";
 import { useNotificationsStore } from "@/features/notifications/notifications.store";
 import { Occurrence, OccurrenceStatus } from "@/features/occurrences/occurrences.types";
 import { findClosestBairro } from "@/core/geo/beira-bairros";
+import { parseUtcDate } from "@/lib/date";
 
 export function useAdminRealtime() {
   const [alerts, setAlerts] = useState<LiveAlertPayload[]>([]);
@@ -95,6 +96,8 @@ export function useAdminRealtime() {
           const lng = Number(newRow.longitude);
           const occurrenceBairro = newRow.bairro && newRow.bairro.trim() !== "" ? newRow.bairro : findClosestBairro(lat, lng);
 
+          const createdAtIso = parseUtcDate(newRow.data_hora_registo).toISOString();
+
           const occurrenceObj: Occurrence = {
             id: newRow.id_ocorrencia,
             title: `Nova Denúncia`,
@@ -105,7 +108,7 @@ export function useAdminRealtime() {
             bairro: occurrenceBairro,
             status,
             gravidade,
-            createdAt: newRow.data_hora_registo || new Date().toISOString(),
+            createdAt: createdAtIso,
           };
 
           const messageText = newRow.descricao
@@ -121,7 +124,7 @@ export function useAdminRealtime() {
             message: messageText,
             read: false,
             gravidade,
-            createdAt: newRow.data_hora_registo || new Date().toISOString(),
+            createdAt: createdAtIso,
           });
 
           // 2. Dispara alerta audiovisual completo (Toast, Chime, Notificação do Navegador)
@@ -131,7 +134,7 @@ export function useAdminRealtime() {
             title: `Nova Denúncia · ${occurrenceBairro}`,
             message: messageText,
             gravidade,
-            createdAt: newRow.data_hora_registo || new Date().toISOString(),
+            createdAt: createdAtIso,
           });
 
           // 3. Atualiza as lojas ativas (Tabela, Mapa, Estatísticas)
@@ -149,6 +152,7 @@ export function useAdminRealtime() {
           if (!newNotif) return;
 
           const cleanMessage = (newNotif.mensagem || "").replace(/[\u{1F300}-\u{1FAFF}]/gu, "").trim();
+          const notifDateIso = parseUtcDate(newNotif.data_hora).toISOString();
 
           // 1. Adiciona à central de notificações em 0ms
           useNotificationsStore.getState().addNotification({
@@ -158,7 +162,7 @@ export function useAdminRealtime() {
             type: newNotif.tipo || "sistema",
             message: cleanMessage,
             read: newNotif.lida || false,
-            createdAt: newNotif.data_hora || new Date().toISOString(),
+            createdAt: notifDateIso,
           });
 
           // 2. Dispara alerta visual e sonoro

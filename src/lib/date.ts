@@ -1,10 +1,31 @@
 export const MAPUTO_TIMEZONE = "Africa/Maputo";
 
 /**
+ * Garante que strings de data/hora vindas do PostgreSQL/Supabase (que vêm sem 'Z')
+ * são tratadas como UTC, evitando desfasamentos de fuso horário.
+ */
+export function parseUtcDate(raw: Date | string | number | null | undefined): Date {
+  if (!raw) return new Date();
+  if (raw instanceof Date) return raw;
+  if (typeof raw === "number") return new Date(raw);
+
+  const str = String(raw).trim();
+  if (!str) return new Date();
+
+  let isoStr = str;
+  if (!str.endsWith("Z") && !str.includes("+") && !/-\d{2}:?\d{2}$/.test(str)) {
+    isoStr = str.includes("T") ? `${str}Z` : `${str.replace(" ", "T")}Z`;
+  }
+
+  const d = new Date(isoStr);
+  return isNaN(d.getTime()) ? new Date(str) : d;
+}
+
+/**
  * Formata uma data para exibição amigável segundo o fuso horário de Moçambique (Maputo, UTC+2).
  */
 export function formatDate(date: Date | string | number): string {
-  const d = new Date(date);
+  const d = parseUtcDate(date);
   return d.toLocaleDateString("pt-MZ", {
     timeZone: MAPUTO_TIMEZONE,
     year: "numeric",
@@ -17,7 +38,7 @@ export function formatDate(date: Date | string | number): string {
  * Formata data e hora completas no fuso horário oficial de Maputo.
  */
 export function formatMaputoDateTime(date: Date | string | number): string {
-  const d = new Date(date);
+  const d = parseUtcDate(date);
   return d.toLocaleString("pt-PT", {
     timeZone: MAPUTO_TIMEZONE,
     day: "2-digit",
@@ -33,7 +54,7 @@ export function formatMaputoDateTime(date: Date | string | number): string {
  */
 export function formatNotificationTimeMaputo(isoDate: Date | string | number): string {
   try {
-    const date = new Date(isoDate);
+    const date = parseUtcDate(isoDate);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);

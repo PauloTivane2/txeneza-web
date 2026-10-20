@@ -5,6 +5,7 @@ import { Occurrence } from "@/features/occurrences/occurrences.types";
 import { OCCURRENCE_STATUS_META } from "@/features/occurrences/occurrence-status";
 import { ImageIcon, MapPin, ChevronRight, Trash2, AlertTriangle } from "lucide-react";
 import { resolveBairro, FORA_DA_BEIRA } from "@/core/geo/beira-bairros";
+import { formatDate } from "@/lib/date";
 
 interface OccurrenceTableProps {
   occurrences: Occurrence[];
@@ -118,7 +119,7 @@ export const OccurrenceTable: React.FC<OccurrenceTableProps> = ({ occurrences, o
 
                   {/* Data */}
                   <td className="px-5 py-3.5 hidden lg:table-cell text-grey600 dark:text-grey400">
-                    {new Date(occ.createdAt).toLocaleDateString("pt-PT", { timeZone: "Africa/Maputo" })}
+                    {formatDate(occ.createdAt)}
                   </td>
 
                   {/* Estado */}
